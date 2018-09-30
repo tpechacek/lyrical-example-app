@@ -8,9 +8,10 @@ const schema = require('./schema/schema');
 const app = express();
 
 // Replace with your mongoLab URI
-const MONGO_URI = '';
+const MONGO_URI =
+    'mongodb://taylor:adminpassword1@ds111963.mlab.com:11963/lyricaldb';
 if (!MONGO_URI) {
-  throw new Error('You must provide a MongoLab URI');
+    throw new Error('You must provide a MongoLab URI');
 }
 
 mongoose.Promise = global.Promise;
@@ -20,10 +21,13 @@ mongoose.connection
     .on('error', error => console.log('Error connecting to MongoLab:', error));
 
 app.use(bodyParser.json());
-app.use('/graphql', expressGraphQL({
-  schema,
-  graphiql: true
-}));
+app.use(
+    '/graphql',
+    expressGraphQL({
+        schema,
+        graphiql: true
+    })
+);
 
 const webpackMiddleware = require('webpack-dev-middleware');
 const webpack = require('webpack');
