@@ -2,13 +2,27 @@ import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { Link } from 'react-router';
+import fetchSongsQuery from '../queries/fetchSongs';
 
 class SongList extends Component {
+  onSongDelete(id) {
+    this.props
+      .mutate({ variables: { id: id } })
+      // .refetch only works if the query is associated with the component itself.
+      .then(() => this.props.data.refetch());
+  }
+
   renderSongs() {
     return this.props.data.songs.map(song => {
       return (
         <li key={song.id} className="collection-item">
           {song.title}
+          <i
+            className="material-icons"
+            onClick={() => this.onSongDelete(song.id)}
+          >
+            delete
+          </i>
         </li>
       );
     });
@@ -32,13 +46,14 @@ class SongList extends Component {
   }
 }
 
-const query = gql`
-  {
-    songs {
+const mutation = gql`
+  mutation DeleteSong($id: ID) {
+    deleteSong(id: $id) {
       id
-      title
     }
   }
 `;
 
-export default graphql(query)(SongList);
+// You have to make multiple function calls when dealing with multiple queries
+// or mutations.
+export default graphql(mutation)(graphql(fetchSongsQuery)(SongList));
