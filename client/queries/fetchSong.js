@@ -7,6 +7,8 @@ export default gql`
       title
       lyrics {
         id
+        content
+        likes
       }
     }
   }
